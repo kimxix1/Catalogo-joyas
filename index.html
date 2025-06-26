@@ -126,6 +126,7 @@
             margin: 1rem auto;
             max-width: 800px;
             padding: 0 2rem;
+            margin-top: 80px;
         }
 
         .search-input {
@@ -356,6 +357,8 @@
         .product-actions {
             display: flex;
             justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.5rem;
         }
 
         .add-to-cart, .view-details, .buy-now {
@@ -365,13 +368,13 @@
             font-weight: 600;
             cursor: pointer;
             transition: var(--transition);
+            flex: 1;
+            min-width: 120px;
         }
 
         .add-to-cart {
             background: var(--secondary);
             color: white;
-            flex-grow: 1;
-            margin-right: 0.5rem;
         }
 
         .add-to-cart:hover {
@@ -382,7 +385,6 @@
             background: white;
             color: var(--secondary);
             border: 1px solid #ddd;
-            margin-right: 0.5rem;
         }
 
         .view-details:hover {
@@ -453,6 +455,7 @@
         .modal-images {
             display: flex;
             flex-direction: column;
+            position: relative;
         }
 
         .main-image {
@@ -460,6 +463,7 @@
             overflow: hidden;
             margin-bottom: 1rem;
             border-radius: 8px;
+            position: relative;
         }
 
         .main-image img {
@@ -471,6 +475,9 @@
         .thumbnail-container {
             display: flex;
             gap: 0.5rem;
+            flex-wrap: wrap;
+            overflow-x: auto;
+            padding-bottom: 10px;
         }
 
         .thumbnail {
@@ -481,6 +488,7 @@
             cursor: pointer;
             border: 2px solid transparent;
             transition: var(--transition);
+            flex-shrink: 0;
         }
 
         .thumbnail.active {
@@ -493,10 +501,12 @@
             object-fit: cover;
         }
 
-        .modal-details h2 {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-            color: var(--secondary);
+        .modal-details {
+            h2 {
+                font-size: 2rem;
+                margin-bottom: 1rem;
+                color: var(--secondary);
+            }
         }
 
         .modal-category {
@@ -573,6 +583,7 @@
         .modal-actions {
             display: flex;
             gap: 1rem;
+            flex-wrap: wrap;
         }
 
         .modal-actions .add-to-cart {
@@ -641,6 +652,7 @@
             border-radius: 5px;
             overflow: hidden;
             margin-right: 1rem;
+            flex-shrink: 0;
         }
 
         .cart-item-img img {
@@ -675,6 +687,8 @@
         .cart-item-quantity {
             display: flex;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
         }
 
         .quantity-btn {
@@ -693,7 +707,6 @@
         .quantity-input {
             width: 40px;
             text-align: center;
-            margin: 0 0.5rem;
             border: 1px solid #ddd;
             border-radius: 3px;
             padding: 0.2rem;
@@ -705,7 +718,6 @@
             color: #ff6b6b;
             cursor: pointer;
             font-size: 1.2rem;
-            margin-left: 1rem;
             transition: var(--transition);
         }
 
@@ -860,6 +872,37 @@
             }
         }
 
+        /* Navigation arrows for thumbnails */
+        .thumbnail-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: var(--transition);
+        }
+
+        .thumbnail-nav:hover {
+            background: rgba(0,0,0,0.8);
+        }
+
+        .thumbnail-prev {
+            left: 10px;
+        }
+
+        .thumbnail-next {
+            right: 10px;
+        }
+
         /* Responsive */
         @media (max-width: 992px) {
             .products-container {
@@ -887,6 +930,14 @@
             nav ul {
                 display: none;
             }
+            
+            .product-actions {
+                flex-direction: column;
+            }
+            
+            .add-to-cart, .view-details, .buy-now {
+                width: 100%;
+            }
         }
 
         @media (max-width: 576px) {
@@ -910,18 +961,12 @@
                 width: 100%;
             }
             
-            .product-actions {
-                flex-direction: column;
-            }
-            
-            .add-to-cart, .view-details, .buy-now {
-                width: 100%;
-                margin-bottom: 0.5rem;
-                margin-right: 0;
-            }
-            
             .modal-actions {
                 flex-direction: column;
+            }
+            
+            .modal-actions button {
+                width: 100%;
             }
             
             .option-buttons {
@@ -932,6 +977,32 @@
                 padding: 0.4rem 0.8rem;
                 font-size: 0.8rem;
             }
+            
+            .search-container {
+                padding: 0 1rem;
+            }
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--secondary);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 5px;
+            box-shadow: var(--shadow);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1100;
+            max-width: 90%;
+            text-align: center;
+        }
+        
+        .notification.show {
+            opacity: 1;
         }
     </style>
 </head>
@@ -1012,6 +1083,12 @@
                 <div class="thumbnail-container" id="thumbnail-container">
                     <!-- Miniaturas se cargarán dinámicamente -->
                 </div>
+                <button class="thumbnail-nav thumbnail-prev" id="thumbnail-prev">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="thumbnail-nav thumbnail-next" id="thumbnail-next">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
             </div>
             <div class="modal-details">
                 <h2 id="modal-title"></h2>
@@ -1083,24 +1160,28 @@
                 price: 13,
                 oldPrice: 22,
                 discount: 35,
-                description: "Juego de dos piezas con estrella y luna en Zirconia, Acero inoxidable",
+                description: "Juego de dos piezas con estrella y luna en Zirconia, Acero inoxidable.",
                 images: [
                     "https://i.imgur.com/jebx6sC.png",
-                    "https://i.imgur.com/LObtGDU.png"
+                    "https://i.imgur.com/LObtGDU.png",
+                    "https://i.imgur.com/jebx6sC.png"
                 ],
-                sizes: [5, 6, 7, 8, 9, 10, 11, 12]
+                sizes: [5, 6, 7, 8, 9, 10, 11, 12],
+                colors: ["Plata", "Oro", "Negro"]
             },
             {
                 id: 2,
                 title: "Anillo de Acero de titanio de lujo",
                 category: "anillos",
                 price: 15,
-                description: "1 pieza de anillo de acero de titanio de lujo elegante, chapado en oro de 18 quilates, incrustación de circonita sintética, tema de corazón",
+                description: "1 pieza de anillo de acero de titanio de lujo elegante, chapado en oro de 18 quilates, incrustación de circonita sintética, tema de corazón.",
                 images: [
                     "https://i.imgur.com/0UUCdkd.png",
-                    "https://i.imgur.com/dvPfqzT.png"
+                    "https://i.imgur.com/dvPfqzT.png",
+                    "https://i.imgur.com/0UUCdkd.png"
                 ],
-                sizes: [5, 6, 7, 8, 9, 10, 11, 12]
+                sizes: [5, 6, 7, 8, 9, 10, 11, 12],
+                colors: ["Oro", "Plata", "Negro"]
             },
             {
                 id: 3,
@@ -1109,163 +1190,195 @@
                 price: 15,
                 oldPrice: 25,
                 discount: 40,
-                description: "Anillo Elegante de Plata de Ley 925 con Corazón Rosa y Diseño Geométrico, Piedra de Nacimiento de Abril, Perfecto para atuendo Casual",
+                description: "Anillo Elegante de Plata de Ley 925 con Corazón Rosa y Diseño Geométrico, Piedra de Nacimiento de Abril, Perfecto para atuendo Casual.",
                 images: [
                     "https://i.imgur.com/5ILigI8.png",
-                    "https://i.imgur.com/F1LRUqB.png"
+                    "https://i.imgur.com/F1LRUqB.png",
+                    "https://i.imgur.com/5ILigI8.png"
                 ],
-                sizes: [5, 6, 7, 8, 9, 10, 11, 12]
+                sizes: [5, 6, 7, 8, 9, 10, 11, 12],
+                colors: ["Plata", "Oro", "Negro"]
             },
             {
                 id: 4,
-                title: "Anillo de Compromiso Trilógico",
+                title: "Anillo de circonita 3A chapado en plata 925",
                 category: "anillos",
-                price: 6800.00,
-                description: "Anillo de compromiso en oro blanco 18k con tres diamantes que representan el pasado, presente y futuro.",
+                price: 25,
+                description: "Anillo de compromiso de circonita en froma de corazón elegante, chapado en plata 925 con circonita cúbica 3A disponible en varios colores.",
                 images: [
-                    "https://images.unsplash.com/photo-1605100804763-247f67b3557e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-                    "https://images.unsplash.com/photo-1603974372036-a6d0e5cf4240?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80"
+                    "https://i.imgur.com/LlbCw6v.png",
+                    "https://i.imgur.com/4z59FjP.png",
+                    "https://i.imgur.com/dbloj0R.png",
+                    "https://i.imgur.com/PyEB1zm.png",
+                    "https://i.imgur.com/PoGYeqa.png",
+                    "https://i.imgur.com/vgugul8.png",
+                    "https://i.imgur.com/djZkyDd.png",
                 ],
-                sizes: [5, 6, 7, 8, 9, 10, 11, 12]
+                sizes: [6, 7, 8, 9, 10],
+                colors: ["Púrpura", "Rosa", "Blanco", "Verde", "celeste", "Cielo azul", "rojo"]
             },
             {
                 id: 5,
-                title: "Anillo Zafiro Azul Real",
+                title: "Anillo con corte cuadrado y piedra cúbica acero inoxidable",
                 category: "anillos",
-                price: 6800.00,
-                oldPrice: 7500.00,
-                discount: 10,
-                description: "Anillo de oro blanco 14k con zafiro azul natural de 1.5 quilates y diamantes laterales. Pieza exclusiva.",
+                price: 10,
+                oldPrice: 15,
+                discount: 33,
+                description: "Anillo de compromiso de acero inoxidable elegante.",
                 images: [
-                    "https://images.unsplash.com/photo-1603974372036-a6d0e5cf4240?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
-                    "https://images.unsplash.com/photo-1605100804763-247f67b3557e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+                    "https://i.imgur.com/b7rSkTG.png",
+                    "https://i.imgur.com/kOtAP2Z.png",
+                    "https://i.imgur.com/kVEOtnj.png"
                 ],
-                sizes: [5, 6, 7, 8, 9, 10, 11, 12]
+                sizes: [5, 6, 7, 8, 9, 10, 11],
+                colors: ["Plateado", "Rosa dorado", "Dorado"]
             },
             {
                 id: 6,
-                title: "Anillo de Oro Amarillo Clásico",
+                title: "Anillo de dama de acero inoxidable",
                 category: "anillos",
-                price: 2800.00,
-                description: "Anillo de oro amarillo 18k con diseño clásico y pulido brillante. Ideal para uso diario.",
+                price: 10,
+                description: "Anillo elegante de corazón negro de acero inoxidable romantico y versátil, adecuado para uso diario.",
                 images: [
-                    "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=735&q=80",
-                    "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80"
+                    "https://i.imgur.com/BgH16BY.png",
+                    "https://i.imgur.com/Wsbkgyi.png",
+                    "https://i.imgur.com/BZeR06r.png"
                 ],
-                sizes: [5, 6, 7, 8, 9, 10, 11, 12]
+                sizes: [6, 7, 8, 9],
+                colors: ["Dorado", "Plateado", "Rosa dorado"]
             },
             {
                 id: 7,
-                title: "Anillo de Plata con Ónix",
+                title: "Anillo de circonita bañado en oro de 18k",
                 category: "anillos",
-                price: 650.00,
-                oldPrice: 800.00,
+                price: 16,
+                oldPrice: 20,
                 discount: 20,
-                description: "Anillo de plata 925 con piedra central de ónix negro y detalles en plata pulida.",
+                description: "Anillo de Promesa elegante para mujer de corazón con Circonita escarlata bañado en oro de 18k con montura de tres garras.",
                 images: [
-                    "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
-                    "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=735&q=80"
+                    "https://i.imgur.com/TUmsqiu.png",
+                    "https://i.imgur.com/QwgptMA.png",
+                    "https://i.imgur.com/5OJFuYz.png"
                 ],
-                sizes: [5, 6, 7, 8, 9, 10, 11, 12]
+                sizes: [6, 7, 8, 9, 10],
+                
             },
             {
                 id: 8,
-                title: "Anillo de Diamantes Eternidad",
+                title: "Anillo elegante de Zirconia bañado en oro blanco",
                 category: "anillos",
-                price: 9500.00,
-                description: "Anillo de eternidad en oro blanco 18k con diamantes en todo su perímetro. Total 1.2 quilates.",
+                price: 14,
+                description: "Anillo de Zirconia bañado en oro blanco con cuatro garras, ideal para uso diario, piedra nacida en abril.",
                 images: [
-                    "https://images.unsplash.com/photo-1605100804763-247f67b3557e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-                    "https://images.unsplash.com/photo-1603974372036-a6d0e5cf4240?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80"
+                    "https://i.imgur.com/8SESpEm.png",
+                    "https://i.imgur.com/tm3083y.png",
+                    "https://i.imgur.com/0Ef64AU.png"
                 ],
-                sizes: [5, 6, 7, 8, 9, 10, 11, 12]
+                sizes: [5, 6, 7, 8, 9, 10, 11, 12],
+                colors: ["Plateado", "Dorado"]
             },
             {
                 id: 9,
-                title: "Anillo de Rubí y Diamantes",
+                title: "Anillo de corazón con Zirconia bañado en oro rosado",
                 category: "anillos",
-                price: 5800.00,
-                oldPrice: 6500.00,
-                discount: 12,
-                description: "Anillo de oro amarillo 18k con rubí central y diamantes laterales. Diseño clásico y elegante.",
+                price: 20,
+                oldPrice: 35,
+                discount: 54,
+                description: "Anillo de corazón ovalado rosa con zirconia y bañado en oro rosado, elegante anillo artesania fina.",
                 images: [
-                    "https://images.unsplash.com/photo-1603974372036-a6d0e5cf4240?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
-                    "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=735&q=80"
+                    "https://i.imgur.com/5UKIy0J.png",
+                    "https://i.imgur.com/bAYYqP2.png",
+                    "https://i.imgur.com/tjUWRe3.png"
                 ],
-                sizes: [5, 6, 7, 8, 9, 10, 11, 12]
+                sizes: [5, 6, 7, 8, 9, 10],
+                
             },
             {
                 id: 10,
-                title: "Anillo de Esmeralda Colombiana",
+                title: "Anilllo circonita KC chapado en oro",
                 category: "anillos",
-                price: 7200.00,
-                description: "Anillo de oro blanco 18k con esmeralda colombiana de 1 quilate y diamantes laterales.",
+                price: 16,
+                description: "Anillo elegante multicolor, adecuados para fiestas y diario, circonita kc chapado en oro",
                 images: [
-                    "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=735&q=80",
-                    "https://images.unsplash.com/photo-1605100804763-247f67b3557e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+                    "https://i.imgur.com/pEYeC6h.png",
+                    "https://i.imgur.com/89ER18d.png",
+                    "https://i.imgur.com/YU5eKg4.png"
                 ],
-                sizes: [5, 6, 7, 8, 9, 10, 11, 12]
+                sizes: [6, 7, 8, 9, 10],
+                
             },
             
             // Collares (10 productos)
             {
                 id: 11,
-                title: "Collar de Diamantes Delicado",
+                title: "Collar con colgante de piedra ojo de gato acero inoxidable",
                 category: "collares",
-                price: 5200.00,
-                description: "Collar de oro blanco 14k con pequeños diamantes engastados. Longitud 40 cm con cierre de seguridad.",
+                price: 14,
+                description: "Collar dorado con colgante de piedra ojo de gato en forma de lágrima, cadena de acero inoxidable bañado en oro de 18 quilates.",
                 images: [
-                    "https://images.unsplash.com/photo-1605100804763-247f67b3557e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-                    "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=735&q=80"
-                ]
+                    "https://i.imgur.com/4f2OVlc.png",
+                    "https://i.imgur.com/iHCfBQ1.png",
+                    "https://i.imgur.com/mFaGoau.png"
+                ],
+                
             },
             {
                 id: 12,
-                title: "Collar Perlas Cultivadas",
+                title: "Collar con colgante de corazón chapado en oro de 18 quilates",
                 category: "collares",
-                price: 5600.00,
-                description: "Collar de perlas cultivadas de agua dulce de 7-8mm, con cierre de oro amarillo 14k. Longitud 45 cm.",
+                price: 17,
+                description: "Collar con colgante de corazón chapado en oro de 18 quilates de acero inoxidable, elegante joyeria.",
                 images: [
-                    "https://images.unsplash.com/photo-1605100804763-247f67b3557e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-                    "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=735&q=80"
-                ]
+                    "https://i.imgur.com/AQVslmI.png",
+                    "https://i.imgur.com/pUVMWJW.png",
+                    "https://i.imgur.com/qNrvjoR.png"
+                ],
+                
             },
             {
                 id: 13,
-                title: "Collar Oro Rosa 14k",
+                title: "Collar de acero inoxidable",
                 category: "collares",
-                price: 3900.00,
-                oldPrice: 5600.00,
+                price: 14,
+                oldPrice: 20,
                 discount: 30,
-                description: "Collar de oro rosa 14k con colgante de corazón con circonitas. Cadena de 40 cm con cierre de seguridad.",
+                description: "Collar elegante de acero inoxidable 304L chapado en oro de 18 quilates.",
                 images: [
-                    "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=735&q=80",
-                    "https://images.unsplash.com/photo-1603974372036-a6d0e5cf4240?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80"
-                ]
+                    "https://i.imgur.com/6ShibHC.png",
+                    "https://i.imgur.com/AsLoXl4.png",
+                    "https://i.imgur.com/ET3O2KB.png"
+                ],
+                
             },
             {
                 id: 14,
-                title: "Collar Plata con Zirconias",
+                title: "Juego de joyería de acero inoxidable, collar, aretes y pulsera",
                 category: "collares",
-                price: 1800.00,
-                description: "Collar de plata sterling 925 con colgante de zirconias cúbicas. Diseño moderno y elegante.",
+                price: 27,
+                description: "Jugo de joyería de acero inoxidable bañado en oro de 18k, collar, aretes y pulsera.",
                 images: [
-                    "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
-                    "https://images.unsplash.com/photo-1605100804763-247f67b3557e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
-                ]
+                    "https://i.imgur.com/MDjtm1k.png",
+                    "https://i.imgur.com/2xfKLDP.png",
+                    "https://i.imgur.com/dNdFTEC.png",
+                    "https://i.imgur.com/X3usMXk.png",
+                    "https://i.imgur.com/8Xmk3BE.png"
+                ],
+                
             },
             {
                 id: 15,
-                title: "Collar Rubí y Diamantes",
+                title: "Collar cadena de clavícula cadena de acero inoxidable",
                 category: "collares",
-                price: 12000.00,
-                oldPrice: 15000.00,
-                discount: 20,
-                description: "Collar de oro blanco 18k con rubí central de 1 quilate y diamantes alrededor. Pieza de colección.",
+                price: 12,
+                oldPrice: 17,
+                discount: 29,
+                description: "Collar cadena de clavícula cadena de acero inoxidable, joyeria fina.",
                 images: [
-                    "https://images.unsplash.com/photo-1605100804763-247f67b3557e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-                    "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=735&q=80"
-                ]
+                    "https://i.imgur.com/09ALu9s.png",
+                    "https://i.imgur.com/K5fz7s1.png",
+                    "https://i.imgur.com/DIN0qHe.png"
+                ],
+                
             },
             {
                 id: 16,
@@ -1277,149 +1390,165 @@
                 description: "Conjunto de 3 piezas de joyeria de plata s925 con Zirconia brillante",
                 images: [
                     "https://i.imgur.com/d1WzdnC.png",
-                    "https://i.imgur.com/UCPGeSH.png"
+                    "https://i.imgur.com/UCPGeSH.png",
+                    "https://i.imgur.com/d1WzdnC.png"
                 ],
-                colors: ['A', 'B', 'C']
+                colors: ["Plata", "Oro", "Negro"]
             },
             {
                 id: 17,
-                title: "Collar de Moneda Antigua",
+                title: "Collar de cadena serpiente plata 925",
                 category: "collares",
-                price: 4500.00,
-                description: "Collar de oro amarillo 14k con réplica de moneda antigua como colgante. Longitud 45 cm.",
+                price: 15,
+                description: "Collar de cadena serpiente plata 925 elegante con cuentas, joyeria de lujo y lindo colgante.",
                 images: [
-                    "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=735&q=80",
-                    "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80"
-                ]
+                    "https://i.imgur.com/jVnRj2f.png",
+                    "https://i.imgur.com/f26yHcp.png",
+                    "https://i.imgur.com/FKciC41.png"
+                ],
+                
             },
             {
                 id: 18,
-                title: "Collar de Plata con Cruz",
+                title: "Collar de Moissanita de plata 925 de 1 quilate",
                 category: "collares",
-                price: 950.00,
-                oldPrice: 1200.00,
-                discount: 20,
-                description: "Collar de plata sterling 925 con colgante de cruz detallada. Longitud 50 cm ajustable.",
+                price: 27,
+                oldPrice: 39,
+                discount: 30,
+                description: "Collar de Moissanita de plata 925 de 1 quilate, multifuncional joyeria brillante.",
                 images: [
-                    "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
-                    "https://images.unsplash.com/photo-1605100804763-247f67b3557e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
-                ]
+                    "https://i.imgur.com/jpXfGG1.png",
+                    "https://i.imgur.com/DkCOLMM.png",
+                    "https://i.imgur.com/dNx8yMk.png"
+                ],
+                
             },
             {
                 id: 19,
-                title: "Collar de Esmeraldas y Diamantes",
+                title: "Collar de lujo en forma de corazón de acero de titanio",
                 category: "collares",
-                price: 15000.00,
-                description: "Collar de oro blanco 18k con esmeraldas colombianas y diamantes. Pieza exclusiva de alta joyería.",
+                price: 23,
+                description: "Collar de lujo en forma de corazón de acero de titanio bañado en platino.",
                 images: [
-                    "https://images.unsplash.com/photo-1605100804763-247f67b3557e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-                    "https://images.unsplash.com/photo-1603974372036-a6d0e5cf4240?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80"
-                ]
+                    "https://i.imgur.com/eyZqxxe.png",
+                    "https://i.imgur.com/gNU7Gpn.png",
+                    "https://i.imgur.com/4ODHO0V.png"
+                ],
+                
             },
             {
                 id: 20,
-                title: "Collar de Perlas Barrocas",
+                title: "Collar de titanio bañado en oro 18k retro",
                 category: "collares",
-                price: 3800.00,
-                oldPrice: 4500.00,
-                discount: 15,
-                description: "Collar de perlas barrocas naturales con cierre de oro amarillo 14k. Longitud 42 cm.",
+                price: 14,
+                oldPrice: 25,
+                discount: 44,
+                description: "Collar de titanio bañado en oro 18k retro en forma de gota de agua, joyeria elegante.",
                 images: [
-                    "https://images.unsplash.com/photo-1603974372036-a6d0e5cf4240?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
-                    "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=735&q=80"
-                ]
+                    "https://i.imgur.com/9iKBy1B.png",
+                    "https://i.imgur.com/5ripwMj.png",
+                    "https://i.imgur.com/djMeFQz.png"
+                ],
+                
             },
             
             // Pulseras (10 productos)
             {
                 id: 21,
-                title: "Pulsera de Diamantes Tenis",
+                title: "Pulsera de plata 925 de bajo alergénico",
                 category: "pulseras",
-                price: 8500.00,
-                description: "Pulsera de oro blanco 18k con diamantes engastados en todo su perímetro. Total 1 quilate.",
+                price: 20,
+                description: "Pulsera de plata 925 de bajo alergénico para mujeres, fresca y sotisficada.",
                 images: [
-                    "https://images.unsplash.com/photo-1605100804763-247f67b3557e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-                    "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80"
+                    "https://i.imgur.com/UNHVX16.png",
+                    "https://i.imgur.com/GJu4Isp.png",
+                    "https://i.imgur.com/cQlu3cy.png"
                 ],
-                colors: ['A', 'B', 'C']
+                
             },
             {
                 id: 22,
-                title: "Pulsera de Plata con Charms",
+                title: "Pulsera con corazon brillante del océano",
                 category: "pulseras",
-                price: 1200.00,
-                oldPrice: 1500.00,
-                discount: 20,
-                description: "Pulsera de plata sterling 925 con charms personalizables. Incluye 3 charms de regalo.",
+                price: 8,
+                oldPrice: 13,
+                discount: 38,
+                description: "Pulsera con corazon brillante del océano, joyeria elegante y de moda.",
                 images: [
-                    "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
-                    "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=735&q=80"
+                    "https://i.imgur.com/cGupkPG.png",
+                    "https://i.imgur.com/i4VWEhz.png",
+                    "https://i.imgur.com/x73ZV0N.png"
                 ],
-                colors: ['A', 'B', 'C']
+                
             },
             {
                 id: 23,
-                title: "Pulsera de Cuero con Plata",
+                title: "Pulsera de plata 925",
                 category: "pulseras",
-                price: 950.00,
-                description: "Pulsera de cuero genuino con detalles en plata sterling 925. Ajustable y unisex.",
+                price: 17,
+                description: "Pulsera de plata 925 diseño redondo con cuentas plateadas moderno.",
                 images: [
-                    "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=735&q=80",
-                    "https://images.unsplash.com/photo-1605100804763-247f67b3557e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+                    "https://i.imgur.com/C7TWNSD.png",
+                    "https://i.imgur.com/TV8W728.png",
+                    "https://i.imgur.com/Fo4PA1p.png"
                 ],
-                colors: ['A', 'B', 'C']
+                
             },
             {
                 id: 24,
-                title: "Pulsera de Oro Amarillo",
+                title: "Pulsera de de circonita cúbica de plata esterlina 925",
                 category: "pulseras",
-                price: 3200.00,
-                description: "Pulsera de oro amarillo 14k con diseño de eslabones entrelazados. Cierre de seguridad.",
+                price: 17,
+                description: "Pulsera de de circonita cúbica de plata esterlina 925, joyeria ajustable accesorio elegante.",
                 images: [
-                    "https://images.unsplash.com/photo-1603974372036-a6d0e5cf4240?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
-                    "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80"
+                    "https://i.imgur.com/33xV8qu.png",
+                    "https://i.imgur.com/y3ReyHM.png",
+                    "https://i.imgur.com/HB5Vqi8.png"
                 ],
-                colors: ['A', 'B', 'C']
+                
             },
             {
                 id: 25,
-                title: "Pulsera de Perlas y Diamantes",
+                title: "Pulsera de plata esterlina 925",
                 category: "pulseras",
-                price: 6800.00,
-                oldPrice: 7500.00,
-                discount: 10,
-                description: "Pulsera de perlas cultivadas alternadas con pequeños diamantes en oro blanco 14k.",
+                price: 18,
+                oldPrice: 25,
+                discount: 28,
+                description: "Pulsera de plata esterlina 925 joyeria elegante y fina.",
                 images: [
-                    "https://images.unsplash.com/photo-1605100804763-247f67b3557e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-                    "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=735&q=80"
+                    "https://i.imgur.com/mSmNjFQ.png",
+                    "https://i.imgur.com/U0Dwdwt.png",
+                    "https://i.imgur.com/YVQPXOb.png"
                 ],
-                colors: ['A', 'B', 'C']
+                
             },
             {
                 id: 26,
                 title: "Pulsera de cuentas de estrella",
                 category: "pulseras",
-                price: 6,
+                price: 8,
                 description: "Pulsera de cuentas de estrella, ideal para fiestas y ocasiones especiales",
                 images: [
                     "https://i.imgur.com/reu6kx4.png",
-                    "https://i.imgur.com/C1ugRDm.png"
+                    "https://i.imgur.com/C1ugRDm.png",
+                    "https://i.imgur.com/reu6kx4.png"
                 ],
-                colors: ['A', 'B', 'C']
+                
             },
             {
                 id: 27,
-                title: "Pulsera de lazo de plata 925",
+                title: "Pulsera de acero inoxidable de alta calidad chapado en oro de 18 quilates",
                 category: "pulseras",
-                price: 13,
+                price: 14,
                 oldPrice: 20,
-                discount: 35,
-                description: "Pulsera de lazo de plata 925 de bajo alergénico para mujeres",
+                discount: 30,
+                description: "Pulsera de acero inoxidable de alta calidad chapado en oro de 18 quilates, accesorio minimalista y elegante",
                 images: [
-                    "https://i.imgur.com/YvR48fr.png",
-                    "https://i.imgur.com/UA9iQ3y.png"
+                    "https://i.imgur.com/nV5jMtm.png",
+                    "https://i.imgur.com/QrJQhiz.png",
+                    "https://i.imgur.com/MI0N5om.png"
                 ],
-                colors: ['A', 'B', 'C']
+                
             },
             {
                 id: 28,
@@ -1429,101 +1558,110 @@
                 description: "Pulsera de estilo y2K con corazón brillante de acero inoxidable ideal para uso diario",
                 images: [
                     "https://i.imgur.com/oBF6oTU.png",
-                    "https://i.imgur.com/Vygg0vQ.png"
+                    "https://i.imgur.com/Vygg0vQ.png",
+                    "https://i.imgur.com/IHhGKFU.png"
                 ],
-                colors: ['A', 'B', 'C']
+                colors: ["Azul", "Lago Azul"]
             },
             {
                 id: 29,
                 title: "Pulsera estilo bohemio",
                 category: "pulseras",
-                price: 25.00,
+                price: 8,
                 description: "Pulsera estilo bohemio, elegante cadena con colgante de rama y fénix",
                 images: [
                     "https://i.imgur.com/uOR8WVJ.png",
-                    "https://images.unsplash.com/photo-1603974372036-a6d0e5cf4240?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80"
+                    "https://i.imgur.com/BhvSpGJ.png",
+                    "https://i.imgur.com/xcYdtoV.png"
                 ],
-                colors: ['A', 'B', 'C']
+                
             },
             {
                 id: 30,
-                title: "Pulsera Plata con Diamantes",
+                title: "Conjunto de pulsera y collar amatista",
                 category: "pulseras",
-                price: 3200.00,
-                oldPrice: 3750.00,
-                discount: 15,
-                description: "Pulsera de plata sterling 925 con diamantes incrustados. Cierre de seguridad y diseño elegante.",
+                price: 15,
+                oldPrice: 25,
+                discount: 40,
+                description: "Conjunto de pulsera y collar amatista elegante.",
                 images: [
-                    "https://images.unsplash.com/photo-1605100804763-247f67b3557e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-                    "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80"
+                    "https://i.imgur.com/4SK9sIV.png",
+                    "https://i.imgur.com/u1FvhMK.png",
+                    "https://i.imgur.com/2VEtMsp.png"
                 ],
-                colors: ['A', 'B', 'C']
+                
             },
             
             // Aretes (10 productos)
             {
                 id: 31,
-                title: "Aretes de Diamantes Clásicos",
+                title: "3 unidades de Pendientes y Collar de Gato Morado Brillante",
                 category: "aretes",
-                price: 3800.00,
-                description: "Aretes de oro blanco 14k con diamantes de 0.25 quilates cada uno. Diseño atemporal.",
+                price: 8,
+                description: "unidades de Pendientes y Collar de Gato Morado Brillante - Regalo de Joyería Minimalista Estilosa para Familiares y Amigos.",
                 images: [
-                    "https://images.unsplash.com/photo-1603974372036-a6d0e5cf4240?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
-                    "https://images.unsplash.com/photo-1605100804763-247f67b3557e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+                    "https://i.imgur.com/A8FDryy.png",
+                    "https://i.imgur.com/gt4Vrtl.png",
+                    "https://i.imgur.com/q11xIOo.png"
+                    
                 ],
-                colors: ['A', 'B', 'C']
+                
             },
             {
                 id: 32,
-                title: "Aretes Colgantes de Perlas",
+                title: "Conjunto de aretes y collar",
                 category: "aretes",
-                price: 2200.00,
-                oldPrice: 2800.00,
-                discount: 20,
-                description: "Aretes colgantes de oro amarillo 14k con perlas cultivadas. Largo 3 cm.",
+                price: 12,
+                oldPrice: 20,
+                discount: 40,
+                description: "Conjunto de aretes y collar, lujoso personalizado elegante y hermoso collar de gota de agua pendientes.",
                 images: [
-                    "https://images.unsplash.com/photo-1605100804763-247f67b3557e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-                    "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=735&q=80"
+                    "https://i.imgur.com/yj60oJa.png",
+                    "https://i.imgur.com/tXv9cVx.png",
+                    "https://i.imgur.com/AgvlT9D.png"
                 ],
-                colors: ['A', 'B', 'C']
+                
             },
             {
                 id: 33,
-                title: "Aretes de Plata con Turquesa",
+                title: "Aretes de plata 925 chapado en oro de 14k",
                 category: "aretes",
-                price: 850.00,
-                description: "Aretes de plata sterling 925 con piedras de turquesa natural. Diseño étnico y elegante.",
+                price: 13,
+                description: "Aretes de plata 925 chapado en oro de 14k de lujo azul elegante.",
                 images: [
-                    "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=735&q=80",
-                    "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80"
+                    "https://i.imgur.com/OAs3Y5j.png",
+                    "https://i.imgur.com/U0fZe6M.png",
+                    "https://i.imgur.com/hsvIdrs.png"
                 ],
-                colors: ['A', 'B', 'C']
+                
             },
             {
                 id: 34,
-                title: "Aretes de Oro Rosa Minimalistas",
+                title: "Aretes de plata 925",
                 category: "aretes",
-                price: 1800.00,
-                description: "Aretes de oro rosa 14k con diseño minimalista y pequeño diamante central.",
+                price: 11,
+                description: "Aretes de plata 925 de corazón con forma de gota, accesorio de fiesta y regalo, joyería elegante para mujer para todas las estaciones.",
                 images: [
-                    "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
-                    "https://images.unsplash.com/photo-1603974372036-a6d0e5cf4240?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80"
+                    "https://i.imgur.com/HCkc5QQ.png",
+                    "https://i.imgur.com/2c2G12j.png",
+                    "https://i.imgur.com/dZEG9oG.png"
                 ],
-                colors: ['A', 'B', 'C']
+                
             },
             {
                 id: 35,
-                title: "Aretes de Zafiro y Diamantes",
+                title: "Aretes de plata 925 aro doble",
                 category: "aretes",
-                price: 4500.00,
-                oldPrice: 5200.00,
-                discount: 15,
-                description: "Aretes de oro blanco 18k con zafiros azules y diamantes. Diseño elegante para ocasiones especiales.",
+                price: 15,
+                oldPrice: 29,
+                discount: 48,
+                description: "Aretes de plata 925 chapado en oro de 18 quilates.",
                 images: [
-                    "https://images.unsplash.com/photo-1603974372036-a6d0e5cf4240?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
-                    "https://images.unsplash.com/photo-1605100804763-247f67b3557e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+                    "https://i.imgur.com/aAr2KTD.png",
+                    "https://i.imgur.com/7yKPLRn.png",
+                    "https://i.imgur.com/rY3nG7U.png"
                 ],
-                colors: ['A', 'B', 'C']
+                
             },
             {
                 id: 36,
@@ -1535,359 +1673,393 @@
                 description: "Aretes de plata esterlina 925 con Zirconia Cúbica azul",
                 images: [
                     "https://i.imgur.com/yGdu3db.png",
-                    "https://i.imgur.com/uHmJJst.png"
+                    "https://i.imgur.com/uHmJJst.png",
+                    "https://i.imgur.com/x6pT5e5.png"
                 ],
-                colors: ['A', 'B', 'C']
+                
             },
             {
                 id: 37,
-                title: "Aretes Perlas Clásicas",
+                title: "Aretes de plata esterlina 925 chapado en oro de 14 quilates",
                 category: "aretes",
-                price: 1800.00,
-                description: "Aretes de perlas cultivadas de 7mm con montura de oro amarillo 14k. Diseño atemporal.",
+                price: 11,
+                description: "Aretes de plata esterlina 925 chapado en oro de 14 quilates anti-alergénicos.",
                 images: [
-                    "https://images.unsplash.com/photo-1605100804763-247f67b3557e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-                    "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=735&q=80"
+                    "https://i.imgur.com/x7krMbK.png",
+                    "https://i.imgur.com/X6ZNDAo.png",
+                    "https://i.imgur.com/ejx4xPL.png"
                 ],
-                colors: ['A', 'B', 'C']
+                
             },
             {
                 id: 38,
-                title: "Aretes Oro 14k con Zafiros",
+                title: "Arete de acero inoxidable 316 con baño de oro 18K",
                 category: "aretes",
-                price: 3400.00,
-                oldPrice: 4500.00,
-                discount: 25,
-                description: "Aretes de oro amarillo 14k con zafiros naturales y pequeños diamantes. Diseño elegante para ocasiones especiales.",
+                price: 13,
+                oldPrice: 20,
+                discount: 35,
+                description: "Arete grande de acero inoxidable 316 con baño de oro 18K en forma de lágrima, anti-alérgico, ideal para uso diario y fiestas.",
                 images: [
-                    "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
-                    "https://images.unsplash.com/photo-1603974372036-a6d0e5cf4240?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80"
+                    "https://i.imgur.com/freY719.png",
+                    "https://i.imgur.com/rNJXPBy.png",
+                    "https://i.imgur.com/kwUw9JQ.png"
                 ],
-                colors: ['A', 'B', 'C']
+                
             },
             {
                 id: 39,
-                title: "Aretes Plata con Amatista",
+                title: "Conjunto de aretes y collar chapado en plata",
                 category: "aretes",
-                price: 1300.00,
-                description: "Aretes de plata sterling 925 con piedras de amatista natural. Diseño bohemio y elegante.",
+                price: 17,
+                description: "Conjunto de aretes y collar chapado en plata, brillantes detalles de pedrería.",
                 images: [
-                    "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=735&q=80",
-                    "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80"
+                    "https://i.imgur.com/qwCTwkG.png",
+                    "https://i.imgur.com/xFVGjC5.png",
+                    "https://i.imgur.com/0eZdyyG.png"
                 ],
-                colors: ['A', 'B', 'C']
+                
             },
             {
                 id: 40,
-                title: "Aretes Colgantes Esmeralda",
+                title: "Aretes con forma de corazón con diseño de flor",
                 category: "aretes",
-                price: 3000.00,
-                oldPrice: 3500.00,
-                discount: 15,
-                description: "Aretes colgantes de oro blanco 14k con esmeraldas naturales y pequeños diamantes. Largo 3 cm.",
+                price: 10,
+                oldPrice: 14,
+                discount: 28,
+                description: "Aretes con forma de corazón con diseño de flor acero inoxidable.",
                 images: [
-                    "https://images.unsplash.com/photo-1603974372036-a6d0e5cf4240?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
-                    "https://images.unsplash.com/photo-1605100804763-247f67b3557e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+                    "https://i.imgur.com/BJOscgl.png",
+                    "https://i.imgur.com/knCLe3n.png",
+                    "https://i.imgur.com/2lDLDTm.png"
                 ],
-                colors: ['A', 'B', 'C']
+                
             },
             
             // Ropa (10 productos)
             {
                 id: 41,
-                title: "Vestido Elegante Negro",
+                title: "Camisa de manga corta para mujer",
                 category: "ropa",
-                price: 330.00,
-                description: "Vestido negro elegante para ocasiones especiales. Tela suave y cómoda con corte ajustado.",
+                price: 45,
+                description: "Camisa de manga corta para mujer con parche de malla y flores bordadas 100% poliéster.",
                 images: [
-                    "https://images.unsplash.com/photo-1539533018447-63fcce2678e4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
-                    "https://images.unsplash.com/photo-1551232864-3f0890e580d9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80"
+                    "https://i.imgur.com/wjpNj8N.png",
+                    "https://i.imgur.com/jZymINS.png",
+                    "https://i.imgur.com/YcmKlT7.png"
                 ],
                 sizes: ['S', 'M', 'L', 'XL'],
-                colors: ['A', 'B', 'C']
+                
             },
             {
                 id: 42,
-                title: "Camisa Formal Blanca",
+                title: "Chaqueta de fleece elegante",
                 category: "ropa",
-                price: 220.00,
-                oldPrice: 260.00,
-                discount: 14,
-                description: "Camisa formal blanca de algodón 100%. Ideal para looks profesionales y ocasiones formales.",
+                price: 98,
+                oldPrice: 128,
+                discount: 23,
+                description: "Chaqueta de fleece elegante para mujer, tela de punto de poliéster.",
                 images: [
-                    "https://images.unsplash.com/photo-1598033129183-c4f50c736f10?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1025&q=80",
-                    "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1072&q=80"
+                    "https://i.imgur.com/KCx0FNg.png",
+                    "https://i.imgur.com/ngmZCcN.png",
+                    "https://i.imgur.com/QDvhPGR.png",
+                    "https://i.imgur.com/6ru7pKZ.png"
                 ],
                 sizes: ['S', 'M', 'L', 'XL'],
-                colors: ['A', 'B', 'C']
+                colors: ['Rojo', 'Chocolate']
             },
             {
                 id: 43,
-                title: "Jeans Slim Fit",
+                title: "Paquete de 3 leggins Capri",
                 category: "ropa",
-                price: 290.00,
-                description: "Jeans slim fit de alta calidad con elastano para mayor comodidad. Disponible en varios colores.",
+                price: 85,
+                description: "Paquete de 3 leggins Capri de cintura alta para mujer con control abdominal, super suaves, opacas, elásticas.",
                 images: [
-                    "https://images.unsplash.com/photo-1542272604-787c3835535d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1026&q=80",
-                    "https://images.unsplash.com/photo-1473966968600-fa801b869a1a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80"
+                    "https://i.imgur.com/6d82gQr.png",
+                    "https://i.imgur.com/ZQPVZkt.png",
+                    "https://i.imgur.com/0NQXCvc.png"
                 ],
-                sizes: ['S', 'M', 'L', 'XL'],
-                colors: ['A', 'B', 'C']
+                sizes: ['S', 'M', 'L', 'XL', 'XXL'],
+                
             },
             {
                 id: 44,
-                title: "Chaqueta de Cuero",
+                title: "Paquete de 5 unidades de pantalones capri",
                 category: "ropa",
-                price: 750.00,
-                oldPrice: 900.00,
-                discount: 20,
-                description: "Chaqueta de cuero genuino con forro interior suave. Diseño clásico que nunca pasa de moda.",
+                price: 125,
+                oldPrice: 155,
+                discount: 19,
+                description: "5 unidades de pantalones capri de mujer súper suaves - Alta cintura, sin transparencia, leggings de entrenamiento para yoga, correr y actividades al aire libre, colores sólidos.",
                 images: [
-                    "https://images.unsplash.com/photo-1551028719-00167b16eac5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
-                    "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1136&q=80"
+                    "https://i.imgur.com/heLMwyt.png",
+                    "https://i.imgur.com/rLAsafE.png",
+                    "https://i.imgur.com/zWZER5B.png"
                 ],
-                sizes: ['S', 'M', 'L', 'XL'],
-                colors: ['A', 'B', 'C']
+                sizes: ['S', 'M', 'L', 'XL', 'XXL'],
+                
             },
             {
                 id: 45,
-                title: "Sudadera con Capucha",
+                title: "Conjunto de ropa casual para niño con estampado de corona de rey",
                 category: "ropa",
-                price: 180.00,
-                description: "Sudadera con capucha de algodón orgánico. Cómoda y perfecta para looks casuales.",
+                price: 95,
+                description: "Conjunto de ropa casual para niño con estampado de corona de rey, sudadera cómoda de manga larga con bolsillo canguro y pantalones de chándal con cintura elástica.",
                 images: [
-                    "https://images.unsplash.com/photo-1527719327859-c6ce80353573?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1064&q=80",
-                    "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1072&q=80"
+                    "https://i.imgur.com/ZMsuPmV.png",
+                    "https://i.imgur.com/UkOdeJ0.png",
+                    "https://i.imgur.com/VrraG1a.png"
                 ],
-                sizes: ['S', 'M', 'L', 'XL'],
-                colors: ['A', 'B', 'C']
+                sizes: ['5-6Y', '7-8Y', '9-10Y', '11-12Y', '13Y', '14-15Y'],
+                
             },
             {
                 id: 46,
-                title: "Blazer Slim Fit",
+                title: "Tops Abrigo con Bolsillo",
                 category: "ropa",
-                price: 450.00,
-                oldPrice: 520.00,
-                discount: 15,
-                description: "Blazer slim fit en lana peinada. Ideal para looks formales y de oficina. Disponible en varios colores.",
+                price: 75,
+                oldPrice: 95,
+                discount: 21,
+                description: " Elegante Cuello de Solapa Color Sólido Poliéster.",
                 images: [
-                    "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1136&q=80",
-                    "https://images.unsplash.com/photo-1551028719-00167b16eac5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80"
+                    "https://i.imgur.com/cuCpZGb.png",
+                    "https://i.imgur.com/aCMgK1y.png",
+                    "https://i.imgur.com/skoSVwo.png",
+                    "https://i.imgur.com/HcwaYb5.png"
                 ],
-                sizes: ['S', 'M', 'L', 'XL'],
-                colors: ['A', 'B', 'C']
+                sizes: ['3-4Y', '4-5Y', '5-6Y', '7-8Y', '9-10Y', '11-12Y'],
+                colors: ['Caqui', 'Rosa rojo']
             },
             {
                 id: 47,
-                title: "Pantalón de Vestir Clásico",
+                title: "Conjunto de pantalón y polo",
                 category: "ropa",
-                price: 320.00,
-                description: "Pantalón de vestir en corte clásico. Tela resistente y cómoda con pliegues marcados.",
+                price: 45,
+                description: "Conjunto de pantalón y polo, con estampado de letras para mujer, top de manga corta con cuello redondo y pantalones jogger, cómodo y de ajuste relajado.",
                 images: [
-                    "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1072&q=80",
-                    "https://images.unsplash.com/photo-1598033129183-c4f50c736f10?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1025&q=80"
+                    "https://i.imgur.com/Mgdjppj.png",
+                    "https://i.imgur.com/yjrnySh.png",
+                    "https://i.imgur.com/yVUH8s0.png"
                 ],
-                sizes: ['S', 'M', 'L', 'XL'],
-                colors: ['A', 'B', 'C']
+                sizes: ['S', 'M', 'L', 'XL', 'XXL'],
+                colors: ['Canela']
             },
             {
                 id: 48,
-                title: "Falda Lápiz Negra",
+                title: "Capris de yoga de cintura",
                 category: "ropa",
-                price: 280.00,
-                oldPrice: 350.00,
-                discount: 20,
-                description: "Falda lápiz en tejido elástico con corte ajustado. Ideal para looks profesionales.",
+                price: 45,
+                oldPrice: 58,
+                discount: 22,
+                description: "Capris de yoga de cintura alta con bloques de color y bolsillos para mujer, leggings deportivos de control de abdomen.",
                 images: [
-                    "https://images.unsplash.com/photo-1551232864-3f0890e580d9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
-                    "https://images.unsplash.com/photo-1539533018447-63fcce2678e4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80"
+                    "https://i.imgur.com/mNk9CHu.png",
+                    "https://i.imgur.com/iawCbWu.png",
+                    "https://i.imgur.com/VhB86Pj.png"
                 ],
-                sizes: ['S', 'M', 'L', 'XL'],
-                colors: ['A', 'B', 'C']
+                sizes: ['S', 'M', 'L', 'XL', 'XXL'],
+                
             },
             {
                 id: 49,
-                title: "Chaleco de Lana",
+                title: "Vestido elegante",
                 category: "ropa",
-                price: 210.00,
-                description: "Chaleco de lana merino 100% con diseño clásico. Ideal para capas en climas fríos.",
+                price: 58,
+                description: "Vestido elegante de manga larga con cuello volado y cinturón para niñas - Vestido midi beige para primavera y otoño.",
                 images: [
-                    "https://images.unsplash.com/photo-1473966968600-fa801b869a1a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
-                    "https://images.unsplash.com/photo-1542272604-787c3835535d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1026&q=80"
+                    "https://i.imgur.com/mksoP3l.png",
+                    "https://i.imgur.com/aYcSjEA.png",
+                    "https://i.imgur.com/npb2Pyy.png"
                 ],
-                sizes: ['S', 'M', 'L', 'XL'],
-                colors: ['A', 'B', 'C']
+                sizes: ['3-4Y', '4-5Y', '5-6Y', '7-8Y', '9-10Y'],
+                
             },
             {
                 id: 50,
-                title: "Camiseta Básica Algodón",
+                title: "5 piezas aleatorias de sudaderas con capucha",
                 category: "ropa",
-                price: 90.00,
-                description: "Camiseta básica de algodón 100% en varios colores. Corte clásico y cómodo.",
+                price: 150,
+                description: "5-Pack de sudaderas con capucha de moda para niños - Pullovers informales de manga larga con bolsillo frontal, tejido de punto suave y cómodo.",
                 images: [
-                    "https://images.unsplash.com/photo-1527719327859-c6ce80353573?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1064&q=80",
-                    "https://images.unsplash.com/photo-1551028719-00167b16eac5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80"
+                    "https://i.imgur.com/yv4YhIv.png",
+                    "https://i.imgur.com/ESO6dxq.png",
+                    "https://i.imgur.com/ai8TUA4.png"
                 ],
-                sizes: ['S', 'M', 'L', 'XL'],
-                colors: ['A', 'B', 'C']
+                sizes: ['5-6Y', '7-8Y', '9-10Y', '11-12Y', '13Y'],
+                
             },
             {
                 id: 51,
-                title: "Vestido para Niña",
+                title: "Conjunto de 2 piezas",
                 category: "ropa",
-                price: 120.00,
-                description: "Vestido para niña con diseño floral y detalles en encaje. Ideal para ocasiones especiales.",
+                price: 60,
+                description: "Un conjunto de 2 piezas con estampados de dibujos animados clásicos, sudadera con capucha elegante y pantalones largos, perfecto para otoño e invierno con forro polar.",
                 images: [
-                    "https://images.unsplash.com/photo-1551232864-3f0890e580d9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
-                    "https://images.unsplash.com/photo-1539533018447-63fcce2678e4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80"
+                    "https://i.imgur.com/5kWUAVm.png",
+                    "https://i.imgur.com/tzWOhwi.png",
+                    "https://i.imgur.com/b8jxUvV.png"
                 ],
                 sizes: ['5-6Y', '7-8Y', '9-10Y', '11-12Y', '13Y'],
-                colors: ['A', 'B', 'C']
+                
             },
             {
                 id: 52,
-                title: "Conjunto para Niño",
+                title: "Pantalón con capucha",
                 category: "ropa",
-                price: 150.00,
-                description: "Conjunto para niño con camiseta y pantalón corto. Diseño cómodo y moderno.",
+                price: 75,
+                description: "Pantalones de mujer de tejido de punto de un solo color con capucha elegante de poliéster.",
                 images: [
-                    "https://images.unsplash.com/photo-1542272604-787c3835535d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1026&q=80",
-                    "https://images.unsplash.com/photo-1473966968600-fa801b869a1a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80"
+                    "https://i.imgur.com/q8OroNf.png",
+                    "https://i.imgur.com/yUJjYsH.png",
+                    "https://i.imgur.com/odQfbVY.png",
+                    "https://i.imgur.com/Cg5HZKc.png",
+                    "https://i.imgur.com/IWbcUqM.png"
                 ],
-                sizes: ['5-6Y', '7-8Y', '9-10Y', '11-12Y', '13Y'],
-                colors: ['A', 'B', 'C']
+                sizes: ['S', 'M', 'L', 'XL', 'XXL'],
+                colors: ['Caqui', 'Gris', 'Aceituna', 'Color café', 'Púrpura']
             },
             
             // Audífonos (10 productos)
             {
                 id: 53,
-                title: "Audífonos Inalámbricos Pro",
+                title: "Auricular inalámbrico estéreo con cancelación de ruido",
                 category: "audifonos",
-                price: 750.00,
-                oldPrice: 900.00,
-                discount: 20,
-                description: "Audífonos inalámbricos con cancelación de ruido y sonido de alta calidad. Batería de larga duración.",
+                price: 15,
+                oldPrice: 20,
+                discount: 25,
+                description: "Auricular inalámbrico estéreo con cancelación de ruido, auriculares inalámbricos en el oído, auriculares inalámbricos táctiles, estuche de carga de auriculares inalámbricos, control de reproductor de música y auriculares electrónicos.",
                 images: [
-                    "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1332&q=80",
-                    "https://images.unsplash.com/photo-1593784991095-a205069470b6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80"
+                    "https://i.imgur.com/fL762ri.png",
+                    "https://i.imgur.com/WQUE9H3.png",
+                    "https://i.imgur.com/0DNJ1mS.png"
                 ],
-                colors: ['A', 'B', 'C']
+                
             },
             {
                 id: 54,
-                title: "Audífonos Deportivos",
+                title: "Audífonos Inalámbricos Elegantes con Pantalla Digital",
                 category: "audifonos",
-                price: 330.00,
-                description: "Audífonos deportivos resistentes al agua y al sudor. Diseño ergonómico que se ajusta perfectamente.",
+                price: 22,
+                description: "Audífonos Inalámbricos TWS Elegantes con Pantalla Digital, Diseño Beige/Blanco, Ajuste Cómodo, Batería Recargable, Regalo Ideal para Fiestas, Auriculares Sin Cables.",
                 images: [
-                    "https://images.unsplash.com/photo-1593784991095-a205069470b6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
-                    "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1332&q=80"
+                    "https://i.imgur.com/RCIZePH.png",
+                    "https://i.imgur.com/gvHoJtm.png",
+                    "https://i.imgur.com/cT5EMn1.png"
                 ],
-                colors: ['A', 'B', 'C']
+                colors: ['Negro', 'Blanco', 'Beige claro']
             },
             {
                 id: 55,
-                title: "Audífonos con Cable",
+                title: "KZ ZSN Pro X-auriculares",
                 category: "audifonos",
-                price: 150.00,
-                oldPrice: 180.00,
-                discount: 20,
-                description: "Audífonos con cable de alta calidad. Sonido claro y potente con micrófono integrado.",
+                price: 60,
+                oldPrice: 78,
+                discount: 23,
+                description: "KZ ZSN Pro X-auriculares Intrauditivos Con Controlador Dual, Cascos Con Cable 1BA 1DD.",
                 images: [
-                    "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
-                    "https://images.unsplash.com/photo-1593784991095-a205069470b6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80"
+                    "https://i.imgur.com/QHhhJrV.png",
+                    "https://i.imgur.com/opExUx1.png",
+                    "https://i.imgur.com/4nyXUMj.png",
+                    "https://i.imgur.com/UPbpYNq.png"
                 ],
-                colors: ['A', 'B', 'C']
+                colors: ['Negro', 'Dorado', 'Celeste']
             },
             {
                 id: 56,
-                title: "Audífonos Gamer RGB",
+                title: "Audífonos Inalámbricos TWS Acer 2025",
                 category: "audifonos",
-                price: 480.00,
-                description: "Audífonos gamer con iluminación RGB y micrófono retráctil. Sonido envolvente 7.1 para una experiencia inmersiva.",
+                price: 35,
+                description: "Audífonos Inalámbricos TWS Acer 2025 con Graves Potentes, Cancelación de Ruido Estéreo para Llamadas, Ultra Duraderos, Modo Gaming con Baja Latencia, Diseño Ligero y Táctil, Compatibles con Múltiples Dispositivos.",
                 images: [
-                    "https://images.unsplash.com/photo-1546435770-a3e426bf472f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1065&q=80",
-                    "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80"
+                    "https://i.imgur.com/NWoiT1l.png",
+                    "https://i.imgur.com/oTsJrGt.png",
+                    "https://i.imgur.com/wJLCaJt.png"
                 ],
-                colors: ['A', 'B', 'C']
+                colors: ['Negro', 'Azul', 'Gris']
             },
             {
                 id: 57,
-                title: "Audífonos Bluetooth Mini",
+                title: "Mini Auriculares Inalámbricos",
                 category: "audifonos",
-                price: 220.00,
-                oldPrice: 290.00,
-                discount: 25,
-                description: "Audífonos Bluetooth mini con estuche de carga. Pequeños pero con gran calidad de sonido.",
+                price: 14,
+                oldPrice: 18,
+                discount: 22,
+                description: "Mini Auriculares Inalámbricos Compactos con Larga Duración de Batería, Control por Teléfono, Reducción de Ruido de Llamadas de Voz Mejorada.",
                 images: [
-                    "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1332&q=80",
-                    "https://images.unsplash.com/photo-1546435770-a3e426bf472f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1065&q=80"
+                    "https://i.imgur.com/bLpnIJH.png",
+                    "https://i.imgur.com/7s1zsbJ.png",
+                    "https://i.imgur.com/qCpyfEv.png",
+                    "https://i.imgur.com/tnnx1uz.png"
                 ],
-                colors: ['A', 'B', 'C']
+                colors: ['Blanco', 'Rosa claro', 'Negro']
             },
             {
                 id: 58,
-                title: "Audífonos Over-Ear Premium",
+                title: "Auriculares Inalámbricos TWS con Pantalla LED Táctil",
                 category: "audifonos",
-                price: 850.00,
-                description: "Audífonos over-ear con cancelación de ruido activa y sonido Hi-Res. Almohadillas de piel sintética.",
+                price: 20,
+                description: "Nuevos Auriculares Inalámbricos TWS con Pantalla LED Táctil In-Ear Auriculares Inalámbricos TWS Deportivos para Música Juegos Auriculares para iOS/Android.",
                 images: [
-                    "https://images.unsplash.com/photo-1593784991095-a205069470b6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
-                    "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1332&q=80"
+                    "https://i.imgur.com/aQFQni4.png",
+                    "https://i.imgur.com/Hh8c4ox.png",
+                    "https://i.imgur.com/Nw0upq6.png"
                 ],
-                colors: ['A', 'B', 'C']
+                
             },
             {
                 id: 59,
-                title: "Audífonos In-Ear Deportivos",
+                title: "Estilo Nuevo 2025 Auriculares Inalámbricos",
                 category: "audifonos",
                 price: 280.00,
                 oldPrice: 350.00,
                 discount: 20,
-                description: "Audífonos in-ear con diseño ergonómico para deportes. Resistente al agua y al sudor.",
+                description: "Estilo Nuevo 2025 Auriculares Inalámbricos, Auriculares Mini Cómodos TWS HIFI Dolby Bajos Estéreo HD para Llamadas, Adaptados para Android y iPhone.",
                 images: [
-                    "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
-                    "https://images.unsplash.com/photo-1546435770-a3e426bf472f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1065&q=80"
+                    "https://i.imgur.com/1icRYRw.png",
+                    "https://i.imgur.com/RFVLA3N.png",
+                    "https://i.imgur.com/DHwgcNZ.png"
                 ],
-                colors: ['A', 'B', 'C']
+                colors: ['Morado', 'Blanco', 'Negro']
             },
             {
                 id: 60,
-                title: "Audífonos True Wireless",
+                title: "Audífonos Inalámbricos para Dormir BRIAME con Doble Micrófono",
                 category: "audifonos",
-                price: 520.00,
-                description: "Audífonos true wireless con estuche de carga. Sonido equilibrado y conexión estable.",
+                price: 19,
+                description: "Audífonos Inalámbricos para Dormir BRIAME con Doble Micrófono, Transmisión de Hueso de Sueño Verdadera y Baja Latencia - Diseño Ultradelgado, Reducción de Ruido, Ligeros y Cómodos para Uso Nocturno, Carga USB-C, Compatibles con iOS/Android.",
                 images: [
-                    "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1332&q=80",
-                    "https://images.unsplash.com/photo-1593784991095-a205069470b6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80"
+                    "https://i.imgur.com/jFLxCmH.png",
+                    "https://i.imgur.com/XvZr2OL.png",
+                    "https://i.imgur.com/hA6cibn.png"
                 ],
-                colors: ['A', 'B', 'C']
+                
             },
             {
                 id: 61,
-                title: "Audífonos con Micrófono Profesional",
+                title: "Audífonos Inalámbricos con Cancelación Activa de Ruido",
                 category: "audifonos",
-                price: 380.00,
-                oldPrice: 450.00,
-                discount: 15,
-                description: "Audífonos con micrófono profesional para streaming y llamadas. Sonido claro y cancelación de ruido.",
+                price: 19,
+                oldPrice: 27,
+                discount: 29,
+                description: "Audífonos Inalámbricos con Cancelación Activa de Ruido y Sonido HiFi Sin Pérdida, Estéreo de Alta Fidelidad Doble DD, Control por Botón, Compatibles con Android/iPhone.",
                 images: [
-                    "https://images.unsplash.com/photo-1546435770-a3e426bf472f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1065&q=80",
-                    "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80"
+                    "https://i.imgur.com/1Xnrf77.png",
+                    "https://i.imgur.com/lnsYBWT.png",
+                    "https://i.imgur.com/zZ3lROn.png"
                 ],
-                colors: ['A', 'B', 'C']
+                
             },
             {
                 id: 62,
-                title: "Audífonos Retro Vintage",
+                title: "Auriculares inalámbricos compactos y ligeros",
                 category: "audifonos",
-                price: 420.00,
-                description: "Audífonos con diseño retro vintage. Sonido cálido y envolvente. Ideal para melómanos.",
+                price: 35,
+                description: "Auriculares inalámbricos compactos y ligeros diseñados para música y llamadas, con cancelación de ruido..",
                 images: [
-                    "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
-                    "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1332&q=80"
+                    "https://i.imgur.com/BNhrjWG.png",
+                    "https://i.imgur.com/oOBrAXI.png",
+                    "https://i.imgur.com/BNhrjWG.png"
+                    
                 ],
-                colors: ['A', 'B', 'C']
+                colors: ['Negro', 'Blanco']
             }
         ];
 
@@ -1922,6 +2094,8 @@
         const modalAddToCart = document.getElementById('modal-add-to-cart');
         const modalBuyNow = document.getElementById('modal-buy-now');
         const optionsSelector = document.getElementById('options-selector');
+        const thumbnailPrev = document.getElementById('thumbnail-prev');
+        const thumbnailNext = document.getElementById('thumbnail-next');
 
         // Mostrar productos
         function displayProducts(productsToShow) {
@@ -1968,15 +2142,33 @@
             
             // Agregar event listeners a los botones
             document.querySelectorAll('.add-to-cart').forEach(button => {
-                button.addEventListener('click', addToCart);
+                button.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const productId = parseInt(e.target.getAttribute('data-id'));
+                    const product = products.find(p => p.id === productId);
+                    showProductModal(product);
+                });
             });
             
             document.querySelectorAll('.view-details').forEach(button => {
-                button.addEventListener('click', showProductDetails);
+                button.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const productId = parseInt(e.target.getAttribute('data-id'));
+                    const product = products.find(p => p.id === productId);
+                    showProductModal(product);
+                });
             });
             
             document.querySelectorAll('.buy-now').forEach(button => {
-                button.addEventListener('click', buyNow);
+                button.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const productId = parseInt(e.target.getAttribute('data-id'));
+                    const product = products.find(p => p.id === productId);
+                    buyNowFromList(product);
+                });
             });
         }
 
@@ -1985,8 +2177,8 @@
             optionsSelector.innerHTML = '';
             selectedOptions = {};
             
-            // Mostrar tallas para anillos
-            if (product.category === 'anillos' && product.sizes) {
+            // Mostrar tallas para anillos y ropa
+            if ((product.category === 'anillos' || product.category === 'ropa') && product.sizes) {
                 const sizeGroup = document.createElement('div');
                 sizeGroup.className = 'option-group';
                 sizeGroup.innerHTML = `
@@ -2016,15 +2208,19 @@
                 });
             }
             
-            // Mostrar colores para pulseras, aretes, ropa y audífonos
-            if ((product.category === 'pulseras' || product.category === 'aretes' || product.category === 'ropa' || product.category === 'audifonos') && product.colors) {
+            // Mostrar colores para productos que los tengan
+            if (product.colors) {
                 const colorGroup = document.createElement('div');
                 colorGroup.className = 'option-group';
                 colorGroup.innerHTML = `
                     <h4>Color:</h4>
                     <div class="option-buttons" id="color-options">
                         ${product.colors.map((color, index) => `
-                            <button class="option-btn" data-value="${color}" data-image="${product.images[index]}">${color}</button>
+                            <button class="option-btn ${index === 0 ? 'selected' : ''}" 
+                                    data-value="${color}" 
+                                    data-image="${product.images[index]}">
+                                ${color}
+                            </button>
                         `).join('')}
                     </div>
                 `;
@@ -2035,18 +2231,12 @@
                 if (firstColorBtn) {
                     firstColorBtn.classList.add('selected');
                     selectedOptions.color = firstColorBtn.getAttribute('data-value');
+                    selectedOptions.image = firstColorBtn.getAttribute('data-image');
                     
-                    // Mostrar imagen correspondiente al primer color
-                    const selectedImage = firstColorBtn.getAttribute('data-image');
-                    if (selectedImage) {
-                        modalMainImage.src = selectedImage;
-                        
-                        // Actualizar miniaturas
-                        thumbnailContainer.innerHTML = '';
-                        const thumbnail = document.createElement('div');
-                        thumbnail.className = 'thumbnail active';
-                        thumbnail.innerHTML = `<img src="${selectedImage}" alt="Miniatura">`;
-                        thumbnailContainer.appendChild(thumbnail);
+                    // Mostrar la imagen correspondiente al color seleccionado
+                    const imageIndex = product.colors.indexOf(selectedOptions.color);
+                    if (imageIndex !== -1 && product.images[imageIndex]) {
+                        modalMainImage.src = product.images[imageIndex];
                     }
                 }
                 
@@ -2056,226 +2246,192 @@
                         colorGroup.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
                         btn.classList.add('selected');
                         selectedOptions.color = btn.getAttribute('data-value');
+                        selectedOptions.image = btn.getAttribute('data-image');
                         
-                        // Cambiar imagen principal según el color seleccionado
-                        const selectedImage = btn.getAttribute('data-image');
-                        if (selectedImage) {
-                            modalMainImage.src = selectedImage;
-                            
-                            // Actualizar miniaturas
-                            thumbnailContainer.innerHTML = '';
-                            const thumbnail = document.createElement('div');
-                            thumbnail.className = 'thumbnail active';
-                            thumbnail.innerHTML = `<img src="${selectedImage}" alt="Miniatura">`;
-                            thumbnailContainer.appendChild(thumbnail);
+                        // Cambiar imagen principal cuando se selecciona un color
+                        const imageIndex = product.colors.indexOf(selectedOptions.color);
+                        if (imageIndex !== -1 && product.images[imageIndex]) {
+                            modalMainImage.src = product.images[imageIndex];
                         }
                     });
                 });
             }
-            
-            // Mostrar tallas y colores para ropa
-            if (product.category === 'ropa') {
-                // Tallas
-                if (product.sizes) {
-                    const sizeGroup = document.createElement('div');
-                    sizeGroup.className = 'option-group';
-                    sizeGroup.innerHTML = `
-                        <h4>Talla:</h4>
-                        <div class="option-buttons" id="size-options">
-                            ${product.sizes.map(size => `
-                                <button class="option-btn" data-value="${size}">${size}</button>
-                            `).join('')}
-                        </div>
-                    `;
-                    optionsSelector.appendChild(sizeGroup);
-                    
-                    // Seleccionar la primera talla por defecto
-                    const firstSizeBtn = sizeGroup.querySelector('.option-btn');
-                    if (firstSizeBtn) {
-                        firstSizeBtn.classList.add('selected');
-                        selectedOptions.size = firstSizeBtn.getAttribute('data-value');
-                    }
-                    
-                    // Event listener para seleccionar talla
-                    sizeGroup.querySelectorAll('.option-btn').forEach(btn => {
-                        btn.addEventListener('click', () => {
-                            sizeGroup.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
-                            btn.classList.add('selected');
-                            selectedOptions.size = btn.getAttribute('data-value');
-                        });
-                    });
-                }
-                
-                // Colores
-                if (product.colors) {
-                    const colorGroup = document.createElement('div');
-                    colorGroup.className = 'option-group';
-                    colorGroup.innerHTML = `
-                        <h4>Color:</h4>
-                        <div class="option-buttons" id="color-options">
-                            ${product.colors.map((color, index) => `
-                                <button class="option-btn" data-value="${color}" data-image="${product.images[index]}">${color}</button>
-                            `).join('')}
-                        </div>
-                    `;
-                    optionsSelector.appendChild(colorGroup);
-                    
-                    // Seleccionar el primer color por defecto
-                    const firstColorBtn = colorGroup.querySelector('.option-btn');
-                    if (firstColorBtn) {
-                        firstColorBtn.classList.add('selected');
-                        selectedOptions.color = firstColorBtn.getAttribute('data-value');
-                        
-                        // Mostrar imagen correspondiente al primer color
-                        const selectedImage = firstColorBtn.getAttribute('data-image');
-                        if (selectedImage) {
-                            modalMainImage.src = selectedImage;
-                            
-                            // Actualizar miniaturas
-                            thumbnailContainer.innerHTML = '';
-                            const thumbnail = document.createElement('div');
-                            thumbnail.className = 'thumbnail active';
-                            thumbnail.innerHTML = `<img src="${selectedImage}" alt="Miniatura">`;
-                            thumbnailContainer.appendChild(thumbnail);
-                        }
-                    }
-                    
-                    // Event listener para seleccionar color
-                    colorGroup.querySelectorAll('.option-btn').forEach(btn => {
-                        btn.addEventListener('click', () => {
-                            colorGroup.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
-                            btn.classList.add('selected');
-                            selectedOptions.color = btn.getAttribute('data-value');
-                            
-                            // Cambiar imagen principal según el color seleccionado
-                            const selectedImage = btn.getAttribute('data-image');
-                            if (selectedImage) {
-                                modalMainImage.src = selectedImage;
-                                
-                                // Actualizar miniaturas
-                                thumbnailContainer.innerHTML = '';
-                                const thumbnail = document.createElement('div');
-                                thumbnail.className = 'thumbnail active';
-                                thumbnail.innerHTML = `<img src="${selectedImage}" alt="Miniatura">`;
-                                thumbnailContainer.appendChild(thumbnail);
-                            }
-                        });
-                    });
-                }
-            }
         }
 
-        // Mostrar detalles del producto
-        function showProductDetails(e) {
-            const productId = parseInt(e.target.getAttribute('data-id'));
-            currentProduct = products.find(product => product.id === productId);
+        // Mostrar modal de producto
+        function showProductModal(product) {
+            currentProduct = product;
             
-            if (currentProduct) {
-                // Mostrar la primera imagen como principal
-                modalMainImage.src = currentProduct.images[0];
-                modalMainImage.alt = currentProduct.title;
+            // Mostrar la primera imagen como principal
+            modalMainImage.src = currentProduct.images[0];
+            modalMainImage.alt = currentProduct.title;
+            
+            // Limpiar miniaturas anteriores
+            thumbnailContainer.innerHTML = '';
+            
+            // Agregar miniaturas
+            currentProduct.images.forEach((image, index) => {
+                const thumbnail = document.createElement('div');
+                thumbnail.className = `thumbnail ${index === 0 ? 'active' : ''}`;
+                thumbnail.innerHTML = `<img src="${image}" alt="Miniatura ${index + 1}">`;
                 
-                // Limpiar miniaturas anteriores
-                thumbnailContainer.innerHTML = '';
-                
-                // Agregar miniaturas (solo si no hay opciones de color)
-                if (!currentProduct.colors) {
-                    currentProduct.images.forEach((image, index) => {
-                        const thumbnail = document.createElement('div');
-                        thumbnail.className = `thumbnail ${index === 0 ? 'active' : ''}`;
-                        thumbnail.innerHTML = `<img src="${image}" alt="Miniatura ${index + 1}">`;
-                        
-                        thumbnail.addEventListener('click', () => {
-                            // Cambiar imagen principal
-                            modalMainImage.src = image;
-                            
-                            // Actualizar miniaturas activas
-                            document.querySelectorAll('.thumbnail').forEach(thumb => {
-                                thumb.classList.remove('active');
-                            });
-                            thumbnail.classList.add('active');
-                        });
-                        
-                        thumbnailContainer.appendChild(thumbnail);
+                thumbnail.addEventListener('click', () => {
+                    // Cambiar imagen principal
+                    modalMainImage.src = image;
+                    
+                    // Actualizar miniaturas activas
+                    document.querySelectorAll('.thumbnail').forEach(thumb => {
+                        thumb.classList.remove('active');
                     });
-                }
+                    thumbnail.classList.add('active');
+                });
                 
-                // Llenar información del producto
-                modalTitle.textContent = currentProduct.title;
-                modalCategory.textContent = currentProduct.category.charAt(0).toUpperCase() + currentProduct.category.slice(1);
-                modalPrice.textContent = `S/${currentProduct.price.toFixed(2)}`;
-                
-                if (currentProduct.oldPrice) {
-                    modalOldPrice.textContent = `S/${currentProduct.oldPrice.toFixed(2)}`;
-                    modalOldPrice.style.display = 'inline';
-                } else {
-                    modalOldPrice.style.display = 'none';
-                }
-                
-                modalDescription.textContent = currentProduct.description;
-                
-                // Mostrar opciones de selección
-                displayProductOptions(currentProduct);
-                
-                // Actualizar botones del modal
-                modalAddToCart.setAttribute('data-id', currentProduct.id);
-                modalBuyNow.setAttribute('data-id', currentProduct.id);
-                
-                // Mostrar modal
-                productModal.classList.add('active');
-                overlay.classList.add('active');
-                document.body.style.overflow = 'hidden';
+                thumbnailContainer.appendChild(thumbnail);
+            });
+            
+            // Llenar información del producto
+            modalTitle.textContent = currentProduct.title;
+            modalCategory.textContent = currentProduct.category.charAt(0).toUpperCase() + currentProduct.category.slice(1);
+            modalPrice.textContent = `S/${currentProduct.price.toFixed(2)}`;
+            
+            if (currentProduct.oldPrice) {
+                modalOldPrice.textContent = `S/${currentProduct.oldPrice.toFixed(2)}`;
+                modalOldPrice.style.display = 'inline';
+            } else {
+                modalOldPrice.style.display = 'none';
             }
+            
+            modalDescription.textContent = currentProduct.description;
+            
+            // Mostrar opciones de selección
+            displayProductOptions(currentProduct);
+            
+            // Actualizar botones del modal
+            modalAddToCart.setAttribute('data-id', currentProduct.id);
+            modalBuyNow.setAttribute('data-id', currentProduct.id);
+            
+            // Mostrar modal
+            productModal.classList.add('active');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
         }
 
-        // Añadir al carrito
-        function addToCart(e) {
-            const productId = parseInt(e.target.getAttribute('data-id'));
-            const product = products.find(p => p.id === productId);
+        // Navegar entre miniaturas
+        function navigateThumbnails(direction) {
+            const thumbnails = document.querySelectorAll('.thumbnail');
+            if (!thumbnails.length) return;
             
-            if (product) {
-                // Crear objeto de producto con las opciones seleccionadas
-                const productToAdd = {
-                    ...product,
-                    selectedOptions: {...selectedOptions},
-                    quantity: 1
-                };
-                
-                // Verificar si el producto ya está en el carrito con las mismas opciones
-                const existingItemIndex = cart.findIndex(item => 
-                    item.id === productId && 
-                    JSON.stringify(item.selectedOptions) === JSON.stringify(selectedOptions)
-                );
-                
-                if (existingItemIndex !== -1) {
-                    cart[existingItemIndex].quantity += 1;
-                } else {
-                    cart.push(productToAdd);
+            let activeIndex = -1;
+            thumbnails.forEach((thumb, index) => {
+                if (thumb.classList.contains('active')) {
+                    activeIndex = index;
                 }
-                
-                updateCart();
-                showNotification(`${product.title} añadido al carrito`);
+            });
+            
+            let newIndex;
+            if (direction === 'prev') {
+                newIndex = activeIndex > 0 ? activeIndex - 1 : thumbnails.length - 1;
+            } else {
+                newIndex = activeIndex < thumbnails.length - 1 ? activeIndex + 1 : 0;
             }
+            
+            // Cambiar imagen principal
+            modalMainImage.src = currentProduct.images[newIndex];
+            
+            // Actualizar miniaturas activas
+            thumbnails.forEach(thumb => thumb.classList.remove('active'));
+            thumbnails[newIndex].classList.add('active');
+            
+            // Hacer scroll a la miniatura seleccionada
+            thumbnails[newIndex].scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest',
+                inline: 'center'
+            });
         }
 
-        // Comprar ahora (WhatsApp)
-        function buyNow(e) {
-            const productId = parseInt(e.target.getAttribute('data-id'));
-            const product = products.find(p => p.id === productId);
+        // Añadir al carrito desde el modal
+        function addToCartFromModal() {
+            if (!currentProduct) return;
             
-            if (product) {
-                let message = `Hola, estoy interesado en comprar el producto: ${product.title} - Precio: S/${product.price.toFixed(2)}`;
-                
-                // Agregar opciones seleccionadas al mensaje
-                if (Object.keys(selectedOptions).length > 0) {
-                    message += `\n\nOpciones seleccionadas:`;
-                    if (selectedOptions.size) message += `\nTalla: ${selectedOptions.size}`;
-                    if (selectedOptions.color) message += `\nColor: ${selectedOptions.color}`;
+            // Determinar qué imagen usar
+            let selectedImage = currentProduct.images[0];
+            if (selectedOptions.image) {
+                selectedImage = selectedOptions.image;
+            } else if (selectedOptions.color && currentProduct.colors) {
+                const colorIndex = currentProduct.colors.indexOf(selectedOptions.color);
+                if (colorIndex !== -1 && currentProduct.images[colorIndex]) {
+                    selectedImage = currentProduct.images[colorIndex];
                 }
-                
-                const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
-                window.open(whatsappUrl, '_blank');
             }
+            
+            // Crear objeto de producto con las opciones seleccionadas
+            const productToAdd = {
+                ...currentProduct,
+                selectedOptions: {...selectedOptions},
+                quantity: 1,
+                selectedImage: selectedImage // Guardamos la imagen seleccionada
+            };
+            
+            // Verificar si el producto ya está en el carrito con las mismas opciones
+            const existingItemIndex = cart.findIndex(item => 
+                item.id === currentProduct.id && 
+                JSON.stringify(item.selectedOptions) === JSON.stringify(selectedOptions)
+            );
+            
+            if (existingItemIndex !== -1) {
+                cart[existingItemIndex].quantity += 1;
+            } else {
+                cart.push(productToAdd);
+            }
+            
+            updateCart();
+            showNotification(`${currentProduct.title} añadido al carrito`);
+            
+            // Cerrar el modal
+            productModal.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Comprar ahora desde la lista de productos (WhatsApp)
+        function buyNowFromList(product) {
+            if (!product) return;
+            
+            let message = `Hola, estoy interesado en comprar el producto: ${product.title} - Precio: S/${product.price.toFixed(2)}`;
+            
+            // Agregar opciones por defecto al mensaje
+            if (product.sizes) {
+                message += `\nTalla: ${product.sizes[0]}`;
+            }
+            if (product.colors) {
+                message += `\nColor: ${product.colors[0]}`;
+            }
+            
+            message += `\n\nPor favor, indíqueme cómo proceder con la compra.`;
+            
+            const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // Comprar ahora desde el modal (WhatsApp)
+        function buyNowFromModal() {
+            if (!currentProduct) return;
+            
+            let message = `Hola, estoy interesado en comprar el producto: ${currentProduct.title} - Precio: S/${currentProduct.price.toFixed(2)}`;
+            
+            // Agregar opciones seleccionadas al mensaje
+            if (selectedOptions.size) {
+                message += `\nTalla: ${selectedOptions.size}`;
+            }
+            if (selectedOptions.color) {
+                message += `\nColor: ${selectedOptions.color}`;
+            }
+            
+            message += `\n\nPor favor, indíqueme cómo proceder con la compra.`;
+            
+            const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
         }
 
         // Actualizar carrito
@@ -2305,14 +2461,8 @@
                     variantText = options.join(' | ');
                 }
                 
-                // Determinar qué imagen mostrar (si hay opciones de color)
-                let itemImage = item.images[0];
-                if (item.selectedOptions?.color) {
-                    const colorIndex = item.colors?.indexOf(item.selectedOptions.color);
-                    if (colorIndex !== -1 && item.images[colorIndex]) {
-                        itemImage = item.images[colorIndex];
-                    }
-                }
+                // Usar la imagen seleccionada o la primera imagen por defecto
+                const itemImage = item.selectedImage || item.images[0];
                 
                 cartItem.innerHTML = `
                     <div class="cart-item-img">
@@ -2542,35 +2692,16 @@
             document.body.style.overflow = 'auto';
         });
 
-        modalAddToCart.addEventListener('click', addToCart);
-        modalBuyNow.addEventListener('click', buyNow);
+        modalAddToCart.addEventListener('click', addToCartFromModal);
+        modalBuyNow.addEventListener('click', buyNowFromModal);
+
+        thumbnailPrev.addEventListener('click', () => navigateThumbnails('prev'));
+        thumbnailNext.addEventListener('click', () => navigateThumbnails('next'));
 
         // Inicializar
-        displayProducts(products);
-
-        // Estilos para notificaciones
-        const style = document.createElement('style');
-        style.textContent = `
-            .notification {
-                position: fixed;
-                bottom: 20px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: var(--secondary);
-                color: white;
-                padding: 1rem 2rem;
-                border-radius: 5px;
-                box-shadow: var(--shadow);
-                opacity: 0;
-                transition: opacity 0.3s ease;
-                z-index: 1100;
-            }
-            
-            .notification.show {
-                opacity: 1;
-            }
-        `;
-        document.head.appendChild(style);
+        document.addEventListener('DOMContentLoaded', () => {
+            displayProducts(products);
+        });
     </script>
 </body>
 </html>
